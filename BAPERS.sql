@@ -190,19 +190,20 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `BAPERS`.`Tasks` ;
 
 CREATE TABLE IF NOT EXISTS `BAPERS`.`Tasks` (
-  `Job_job_id` INT NOT NULL,
+  `fk_job_id` INT NOT NULL,
   `Job_fk_customer_id` VARCHAR(45) NOT NULL,
-  `Task_task_id` INT NOT NULL,
-  PRIMARY KEY (`Job_job_id`, `Job_fk_customer_id`, `Task_task_id`),
-  INDEX `fk_Job_has_Task_Task1_idx` (`Task_task_id` ASC),
-  INDEX `fk_Job_has_Task_Job1_idx` (`Job_job_id` ASC, `Job_fk_customer_id` ASC),
+  `fk_task_id` INT NOT NULL,
+  `complete` TINYINT(1) NOT NULL,
+  PRIMARY KEY (`fk_job_id`, `Job_fk_customer_id`, `fk_task_id`),
+  INDEX `fk_Job_has_Task_Task1_idx` (`fk_task_id` ASC),
+  INDEX `fk_Job_has_Task_Job1_idx` (`fk_job_id` ASC, `Job_fk_customer_id` ASC),
   CONSTRAINT `fk_Job_has_Task_Job1`
-    FOREIGN KEY (`Job_job_id` , `Job_fk_customer_id`)
+    FOREIGN KEY (`fk_job_id` , `Job_fk_customer_id`)
     REFERENCES `BAPERS`.`Job` (`job_id` , `fk_customer_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Job_has_Task_Task1`
-    FOREIGN KEY (`Task_task_id`)
+    FOREIGN KEY (`fk_task_id`)
     REFERENCES `BAPERS`.`Task` (`task_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
