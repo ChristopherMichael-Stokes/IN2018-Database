@@ -33,10 +33,12 @@ DROP TABLE IF EXISTS `BAPERS`.`User` ;
 
 CREATE TABLE IF NOT EXISTS `BAPERS`.`User` (
   `user_id` INT NOT NULL,
+  `first_name` VARCHAR(45) NOT NULL,
+  `surname` VARCHAR(45) NOT NULL,
   `username` VARCHAR(15) NOT NULL,
-  `passphrase` VARCHAR(44) NOT NULL,
+  `passphrase` VARCHAR(128) NOT NULL,
   `fk_type` VARCHAR(20) NOT NULL,
-  PRIMARY KEY (`user_id`, `fk_type`),
+  PRIMARY KEY (`user_id`),
   INDEX `fk_User_User_Type1_idx` (`fk_type` ASC),
   CONSTRAINT `fk_User_User_Type1`
     FOREIGN KEY (`fk_type`)
@@ -86,43 +88,20 @@ CREATE TABLE IF NOT EXISTS `BAPERS`.`Customer_Account` (
   `mobile_phone` VARCHAR(11) NOT NULL,
   `valued` TINYINT(1) NOT NULL,
   `fk_address_line1` VARCHAR(45) NOT NULL,
-  `fk_city` VARCHAR(45) NOT NULL,
+  `fk_city` VARCHAR(25) NOT NULL,
   `fk_postcode` VARCHAR(10) NOT NULL,
-  `fk_type` VARCHAR(10) NOT NULL,
-  PRIMARY KEY (`customer_id`, `email`, `fk_address_line1`, `fk_city`, `fk_postcode`, `fk_type`),
+  `fk_Plan_type` VARCHAR(10) NOT NULL,
+  PRIMARY KEY (`customer_id`, `email`),
   INDEX `fk_Customer_Account_Address1_idx` (`fk_address_line1` ASC, `fk_city` ASC, `fk_postcode` ASC),
-  INDEX `fk_Customer_Account_Discount Plan1_idx` (`fk_type` ASC),
+  INDEX `fk_Customer_Account_Discount_Plan1_idx` (`fk_Plan_type` ASC),
   CONSTRAINT `fk_Customer_Account_Address1`
     FOREIGN KEY (`fk_address_line1` , `fk_city` , `fk_postcode`)
     REFERENCES `BAPERS`.`Address` (`address_line1` , `city` , `postcode`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Customer_Account_Discount Plan1`
-    FOREIGN KEY (`fk_type`)
+  CONSTRAINT `fk_Customer_Account_Discount_Plan1`
+    FOREIGN KEY (`fk_Plan_type`)
     REFERENCES `BAPERS`.`Discount_Plan` (`type`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `BAPERS`.`Job`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `BAPERS`.`Job` ;
-
-CREATE TABLE IF NOT EXISTS `BAPERS`.`Job` (
-  `job_id` INT NOT NULL,
-  `fk_customer_id` VARCHAR(45) NOT NULL,
-  `amount_due` INT NOT NULL,
-  `deadline` DATETIME NULL,
-  `start_time` DATETIME NOT NULL,
-  `end_time` DATETIME NULL,
-  `urgent` TINYINT(1) NOT NULL,
-  PRIMARY KEY (`job_id`, `fk_customer_id`),
-  INDEX `fk_Job_Customer1_idx` (`fk_customer_id` ASC),
-  CONSTRAINT `fk_Job_Customer1`
-    FOREIGN KEY (`fk_customer_id`)
-    REFERENCES `BAPERS`.`Customer_Account` (`customer_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -135,9 +114,41 @@ DROP TABLE IF EXISTS `BAPERS`.`Payment_Info` ;
 
 CREATE TABLE IF NOT EXISTS `BAPERS`.`Payment_Info` (
   `payment_id` INT NOT NULL,
-  `amount_paid` FLOAT NOT NULL,
+  `amount_paid` INT NOT NULL,
   `payment_type` VARCHAR(10) NOT NULL,
+  `date_paid` DATE NOT NULL,
   PRIMARY KEY (`payment_id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `BAPERS`.`Job`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `BAPERS`.`Job` ;
+
+CREATE TABLE IF NOT EXISTS `BAPERS`.`Job` (
+  `job_id` INT NOT NULL,
+  `amount_due` INT NOT NULL,
+  `deadline` DATETIME NULL,
+  `start_time` DATETIME NOT NULL,
+  `end_time` DATETIME NULL,
+  `urgent` TINYINT(1) NOT NULL,
+  `fk_customer_id` VARCHAR(45) NOT NULL,
+  `fk_email` VARCHAR(45) NOT NULL,
+  `fk_payment_id` INT NOT NULL,
+  PRIMARY KEY (`job_id`, `fk_payment_id`, `fk_customer_id`, `fk_email`),
+  INDEX `fk_Job_Customer_Account1_idx` (`fk_customer_id` ASC, `fk_email` ASC),
+  INDEX `fk_Job_Payment_Info1_idx` (`fk_payment_id` ASC),
+  CONSTRAINT `fk_Job_Customer_Account1`
+    FOREIGN KEY (`fk_customer_id` , `fk_email`)
+    REFERENCES `BAPERS`.`Customer_Account` (`customer_id` , `email`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Job_Payment_Info1`
+    FOREIGN KEY (`fk_payment_id`)
+    REFERENCES `BAPERS`.`Payment_Info` (`payment_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
@@ -162,32 +173,6 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `BAPERS`.`Payment`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `BAPERS`.`Payment` ;
-
-CREATE TABLE IF NOT EXISTS `BAPERS`.`Payment` (
-  `Payment_payment_id` INT NOT NULL,
-  `Payment_fk_job_id` INT NOT NULL,
-  `Job_job_id` INT NOT NULL,
-  `Job_fk_customer_id` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`Payment_payment_id`, `Payment_fk_job_id`, `Job_job_id`, `Job_fk_customer_id`),
-  INDEX `fk_Payment_has_Job_Job1_idx` (`Job_job_id` ASC, `Job_fk_customer_id` ASC),
-  INDEX `fk_Payment_has_Job_Payment1_idx` (`Payment_payment_id` ASC, `Payment_fk_job_id` ASC),
-  CONSTRAINT `fk_Payment_has_Job_Payment1`
-    FOREIGN KEY (`Payment_payment_id`)
-    REFERENCES `BAPERS`.`Payment_Info` (`payment_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Payment_has_Job_Job1`
-    FOREIGN KEY (`Job_job_id` , `Job_fk_customer_id`)
-    REFERENCES `BAPERS`.`Job` (`job_id` , `fk_customer_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
 -- Table `BAPERS`.`Task`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `BAPERS`.`Task` ;
@@ -204,32 +189,36 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `BAPERS`.`JobTasks`
+-- Table `BAPERS`.`Tasks`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `BAPERS`.`JobTasks` ;
+DROP TABLE IF EXISTS `BAPERS`.`Tasks` ;
 
-CREATE TABLE IF NOT EXISTS `BAPERS`.`JobTasks` (
-  `fk_job_id` INT NOT NULL,
+CREATE TABLE IF NOT EXISTS `BAPERS`.`Tasks` (
+  `Job_job_id` INT NOT NULL,
+  `Job_fk_payment_id` INT NOT NULL,
   `Job_fk_customer_id` VARCHAR(45) NOT NULL,
-  `fk_task_id` INT NOT NULL,
-  `complete` TINYINT(1) NOT NULL,
-  `fk_user_id` INT NOT NULL,
-  PRIMARY KEY (`fk_job_id`, `Job_fk_customer_id`, `fk_task_id`, `fk_user_id`),
-  INDEX `fk_Job_has_Task_Task1_idx` (`fk_task_id` ASC),
-  INDEX `fk_Job_has_Task_Job1_idx` (`fk_job_id` ASC, `Job_fk_customer_id` ASC),
-  INDEX `fk_JobTasks_User1_idx` (`fk_user_id` ASC),
+  `Job_fk_email` VARCHAR(45) NOT NULL,
+  `Task_task_id` INT NOT NULL,
+  `User_user_id` INT NOT NULL,
+  `start_time` DATETIME NOT NULL,
+  `end_time` DATETIME NOT NULL,
+  `discount` DOUBLE NOT NULL,
+  PRIMARY KEY (`Job_job_id`, `Job_fk_payment_id`, `Job_fk_customer_id`, `Job_fk_email`, `Task_task_id`),
+  INDEX `fk_Job_has_Task_Task1_idx` (`Task_task_id` ASC),
+  INDEX `fk_Job_has_Task_Job1_idx` (`Job_job_id` ASC, `Job_fk_payment_id` ASC, `Job_fk_customer_id` ASC, `Job_fk_email` ASC),
+  INDEX `fk_Tasks_User1_idx` (`User_user_id` ASC),
   CONSTRAINT `fk_Job_has_Task_Job1`
-    FOREIGN KEY (`fk_job_id` , `Job_fk_customer_id`)
-    REFERENCES `BAPERS`.`Job` (`job_id` , `fk_customer_id`)
+    FOREIGN KEY (`Job_job_id` , `Job_fk_payment_id` , `Job_fk_customer_id` , `Job_fk_email`)
+    REFERENCES `BAPERS`.`Job` (`job_id` , `fk_payment_id` , `fk_customer_id` , `fk_email`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Job_has_Task_Task1`
-    FOREIGN KEY (`fk_task_id`)
+    FOREIGN KEY (`Task_task_id`)
     REFERENCES `BAPERS`.`Task` (`task_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_JobTasks_User1`
-    FOREIGN KEY (`fk_user_id`)
+  CONSTRAINT `fk_Tasks_User1`
+    FOREIGN KEY (`User_user_id`)
     REFERENCES `BAPERS`.`User` (`user_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
