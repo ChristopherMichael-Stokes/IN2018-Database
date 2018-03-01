@@ -443,4 +443,3 @@ INSERT INTO `BAPERS`.`Discount_Band` (`fk_account_number`, `price`, `percentage`
 INSERT INTO `BAPERS`.`Discount_Band` (`fk_account_number`, `price`, `percentage`) VALUES ('acc0001', 0, 0.03);
 
 COMMIT;
-
