@@ -27,5 +27,5 @@ as 'Packing'
 from Job_Task
 inner join task
 on Job_task.fk_task_id = task.task_id
-where job_task.start_time > '20180113 14:30:00' and time(job_task.end_time) < '20180114 05:00:00' and date(job_task.start_time) = '2018-01-13'
+where job_task.start_time > '20180113 14:30:00' and job_task.end_time < '20180114 05:00:00'
 group by date(job_task.start_time)
