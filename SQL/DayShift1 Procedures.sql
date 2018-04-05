@@ -1,8 +1,0 @@
-DROP PROCEDURE IF EXISTS Day_shift1;
-DELIMITER //
-CREATE PROCEDURE Day_shift1
-(IN date CHAR(20))
-BEGIN
-call shift(date, '05:00:00', '14:30:00');
-END //
-DELIMITER ;

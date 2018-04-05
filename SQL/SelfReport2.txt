@@ -1,1 +1,0 @@
-This report is use to show the total amount of payment received from each customer alongside with how many jobs included inside those payment. It provide a view for office manager to make decision for some customer and upgrade their account according to their attribute to the company.

@@ -1,1 +1,0 @@
-This report is use to show the summary of task ordering activities from the customer, the report will show the ranking (Number of ordering) of each tasks, so the company can make decision on putting more resources or increase prices on certain tasks according to the report.
