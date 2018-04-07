@@ -1,0 +1,10 @@
+user types:
+0	-	office manager
+1	-	shift manager
+2	-	receptionist
+3	-	technician
+
+discount plan:
+0	-	fixed
+1	-	variable
+2	-	flexible
