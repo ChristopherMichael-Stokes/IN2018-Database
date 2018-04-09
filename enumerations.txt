@@ -8,3 +8,7 @@ discount plan:
 0	-	fixed
 1	-	variable
 2	-	flexible
+
+payment type:
+0	-	cash
+1	-	card
