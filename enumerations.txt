@@ -5,9 +5,10 @@ user types:
 3	-	technician
 
 discount plan:
-0	-	fixed
-1	-	variable
-2	-	flexible
+0	-	none
+1	-	fixed
+2	-	variable
+3	-	flexible
 
 payment type:
 0	-	cash
