@@ -13,3 +13,7 @@ discount plan:
 payment type:
 0	-	cash
 1	-	card
+
+locked:
+0 - activated
+1 - disabled
